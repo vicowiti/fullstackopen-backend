@@ -8,6 +8,8 @@ const notFound = require("./middleware/notFound");
 const app = express();
 app.use(cors());
 
+app.use(express.static("dist"));
+
 // Express middleware
 
 app.use(express.json());
