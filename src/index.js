@@ -5,6 +5,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const notFound = require("./middleware/notFound");
 const connectToDb = require("./utils/db");
+const errorHandler = require("./middleware/errorHandler");
+const phonebook = require("./models/phonebook");
 connectToDb();
 
 const app = express();
@@ -55,12 +57,13 @@ const persons = [
   },
 ];
 
-app.get("/info", (req, res) => {
+app.get("/info", async (req, res) => {
+  const people = await phonebook.find({});
   res
     .status(200)
     .send(
       `<p>Phonebook has info for ${
-        persons.length
+        people.length
       } people</p><p>${new Date()}</p>`
     );
 });
@@ -68,6 +71,7 @@ app.get("/info", (req, res) => {
 app.use("/api/persons", require("./routes/persons/personsRoutes"));
 
 app.use(notFound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 

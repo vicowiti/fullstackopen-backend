@@ -28,28 +28,43 @@ router.get("/", async (req, res) => {
 });
 
 //Get a contact
-router.get("/:id", async (req, res) => {
-  const id = req.params.id;
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
 
-  const person = await Phonebook.findById(id);
+    const person = await Phonebook.findById(id);
 
-  if (!person) return res.status(400).json({ message: "User not found" });
+    if (!person) return res.status(404).json({ message: "User not found" });
 
-  res.status(200).json(person);
+    res.status(200).json(person);
+  } catch (error) {
+    next(error);
+  }
 });
-
 //Delete a contact
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
 
-  const person = people.find((person) => person.id === Number(id));
+  try {
+    const person = await Phonebook.findByIdAndDelete(id);
+    res.status(204).json(person);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-  if (person) {
-    people.filter((person) => person.id !== Number(id));
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
 
-    res.status(200).json({ message: "User was deleted successfully" });
-  } else {
-    res.status(404).json({ error: "Person not found" });
+  try {
+    const person = await Phonebook.findByIdAndUpdate(id, {
+      name: req.body.name,
+      number: req.body.number,
+    });
+
+    res.status(200).json(person);
+  } catch (error) {
+    console.error(error);
   }
 });
 
