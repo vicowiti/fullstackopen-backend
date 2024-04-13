@@ -3,7 +3,7 @@ const Phonebook = require("../../models/phonebook");
 
 const router = express.Router();
 
-//Create a contact
+// Create a contact
 router.post("/", async (req, res, next) => {
   try {
     const person = req.body;
@@ -20,7 +20,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-//Get all contacts
+// Get all contacts
 router.get("/", async (req, res) => {
   const allContacts = await Phonebook.find({});
 
@@ -29,34 +29,38 @@ router.get("/", async (req, res) => {
   res.status(200).json(allContacts);
 });
 
-//Get a contact
+// Get a contact
 router.get("/:id", async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
     const person = await Phonebook.findById(id);
 
     if (!person) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(person);
+    return;
   } catch (error) {
     next(error);
+    return;
   }
 });
-//Delete a contact
-router.delete("/:id", async (req, res) => {
-  const id = req.params.id;
+// Delete a contact
+router.delete("/:id", async (req, res, next) => {
+  const { id } = req.params;
 
   try {
     const person = await Phonebook.findByIdAndDelete(id);
     res.status(204).json(person);
+    return;
   } catch (error) {
-    console.error(error);
+    next(error);
+    return;
   }
 });
 
 router.put("/:id", async (req, res, next) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const person = await Phonebook.findByIdAndUpdate(
@@ -69,9 +73,10 @@ router.put("/:id", async (req, res, next) => {
     );
 
     res.status(200).json(person);
+    return;
   } catch (error) {
-    console.error(error);
     next(error);
+    return;
   }
 });
 

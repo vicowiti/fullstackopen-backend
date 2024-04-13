@@ -1,18 +1,19 @@
-const express = require("express");
-const dotenv = require("dotenv").config();
-const cors = require("cors");
+const express = require('express');
+const dotenv = require('dotenv').config();
+const cors = require('cors');
 
-const morgan = require("morgan");
-const notFound = require("./middleware/notFound");
-const connectToDb = require("./utils/db");
-const errorHandler = require("./middleware/errorHandler");
-const phonebook = require("./models/phonebook");
+const morgan = require('morgan');
+const notFound = require('./middleware/notFound');
+const connectToDb = require('./utils/db');
+const errorHandler = require('./middleware/errorHandler');
+const phonebook = require('./models/phonebook');
+
 connectToDb();
 
 const app = express();
 app.use(cors());
 
-app.use(express.static("dist"));
+app.use(express.static('dist'));
 
 // Express middleware
 
@@ -21,58 +22,58 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Define a custom token to capture the request body
-morgan.token("body", (req, res) => {
+morgan.token('body', (req, res) => {
   // Check if the request has a body (to avoid errors)
-  if (req.method !== "GET" && req.method !== "HEAD" && req.body) {
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.body) {
     return JSON.stringify(req.body);
   }
-  return "";
+  return '';
 });
 
 // Use the custom token in the format string
 app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+  morgan(':method :url :status :res[content-length] - :response-time ms :body'),
 );
 
 const persons = [
   {
     id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
+    name: 'Arto Hellas',
+    number: '040-123456',
   },
   {
     id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
+    name: 'Ada Lovelace',
+    number: '39-44-5323523',
   },
   {
     id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
+    name: 'Dan Abramov',
+    number: '12-43-234345',
   },
   {
     id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
+    name: 'Mary Poppendieck',
+    number: '39-23-6423122',
   },
 ];
 
-app.get("/info", async (req, res) => {
+app.get('/info', async (req, res) => {
   const people = await phonebook.find({});
   res
     .status(200)
     .send(
       `<p>Phonebook has info for ${
         people.length
-      } people</p><p>${new Date()}</p>`
+      } people</p><p>${new Date()}</p>`,
     );
 });
 
-app.use("/api/persons", require("./routes/persons/personsRoutes"));
+app.use('/api/persons', require('./routes/persons/personsRoutes'));
 
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, console.log("Server started on port 3000"));
+app.listen(PORT, console.log('Server started on port 3000'));

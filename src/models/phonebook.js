@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const phonebookSchema = new mongoose.Schema({
   name: {
@@ -11,7 +11,7 @@ const phonebookSchema = new mongoose.Schema({
     minLength: 8,
     required: true,
     validate: {
-      validator: function (v) {
+      validator(v) {
         return /^\d{2,3}-\d+$/.test(v);
       },
       message: (props) => `${props.value} is not a valid phone number!`,
@@ -19,7 +19,7 @@ const phonebookSchema = new mongoose.Schema({
   },
 });
 
-phonebookSchema.set("toJSON", {
+phonebookSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -27,4 +27,4 @@ phonebookSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Phonebook", phonebookSchema);
+module.exports = mongoose.model('Phonebook', phonebookSchema);
