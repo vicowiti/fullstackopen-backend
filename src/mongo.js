@@ -1,10 +1,5 @@
 const mongoose = require("mongoose");
 
-const phonebookSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-});
-
 if (process.argv.length < 3) {
   console.log("give password as argument");
   process.exit(1);

@@ -1,72 +1,45 @@
 const express = require("express");
+const Phonebook = require("../../models/phonebook");
 
 const router = express.Router();
 
-const people = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 //Create a contact
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const person = req.body;
 
   if (!person.name || !person.number) {
     res.status(400).json({ error: "Name and number are required" });
   }
 
-  const nameExists = people.find((item) => item.name === person.name);
+  const created = await Phonebook.create(person);
 
-  if (nameExists) {
-    res.status(400).json({ error: "Name already exists" });
-    return;
-  }
-
-  people.push({ ...person, id: Math.floor(Math.random() * 476) });
-
-  console.log(people);
-
-  res.status(201).json(person);
+  res.status(201).json(created);
 });
 
 //Get all contacts
-router.get("/", (req, res) => {
-  res.status(200).json(people);
+router.get("/", async (req, res) => {
+  const allContacts = await Phonebook.find({});
+
+  console.log("All Contacts", allContacts);
+
+  if (!allContacts) return res.status(400).json({ message: "No Contacts" });
+
+  res.status(200).json(allContacts);
 });
 
 //Get a contact
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const id = req.params.id;
 
-  const person = people.find((person) => person.id === Number(id));
+  const person = await Phonebook.findById(id);
 
-  if (person) {
-    res.status(200).json(person);
-  } else {
-    res.status(404).json({ error: "Person not found" });
-  }
+  if (!person) return res.status(400).json({ message: "User not found" });
+
+  res.status(200).json(person);
 });
 
 //Delete a contact
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const id = req.params.id;
 
   const person = people.find((person) => person.id === Number(id));

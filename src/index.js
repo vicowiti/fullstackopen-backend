@@ -4,6 +4,8 @@ const cors = require("cors");
 
 const morgan = require("morgan");
 const notFound = require("./middleware/notFound");
+const connectToDb = require("./utils/db");
+connectToDb();
 
 const app = express();
 app.use(cors());
