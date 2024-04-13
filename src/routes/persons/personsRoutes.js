@@ -4,23 +4,25 @@ const Phonebook = require("../../models/phonebook");
 const router = express.Router();
 
 //Create a contact
-router.post("/", async (req, res) => {
-  const person = req.body;
+router.post("/", async (req, res, next) => {
+  try {
+    const person = req.body;
 
-  if (!person.name || !person.number) {
-    res.status(400).json({ error: "Name and number are required" });
+    if (!person.name || !person.number) {
+      res.status(400).json({ error: "Name and number are required" });
+    }
+
+    const created = await Phonebook.create(person);
+
+    res.status(201).json(created);
+  } catch (error) {
+    next(error);
   }
-
-  const created = await Phonebook.create(person);
-
-  res.status(201).json(created);
 });
 
 //Get all contacts
 router.get("/", async (req, res) => {
   const allContacts = await Phonebook.find({});
-
-  console.log("All Contacts", allContacts);
 
   if (!allContacts) return res.status(400).json({ message: "No Contacts" });
 
@@ -53,18 +55,23 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", async (req, res, next) => {
   const id = req.params.id;
 
   try {
-    const person = await Phonebook.findByIdAndUpdate(id, {
-      name: req.body.name,
-      number: req.body.number,
-    });
+    const person = await Phonebook.findByIdAndUpdate(
+      id,
+      {
+        name: req.body.name,
+        number: req.body.number,
+      },
+      { new: true, runValidators: true, context: "query" }
+    );
 
     res.status(200).json(person);
   } catch (error) {
     console.error(error);
+    next(error);
   }
 });
 
